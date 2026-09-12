@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Live Stream Re-Embedder</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --accent-color: #38bdf8;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+    }
+
+    header {
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      color: var(--accent-color);
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    input[type="text"], select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    input[type="text"]:focus, select:focus {
+      border-color: var(--accent-color);
+    }
+
+    .btn {
+      background-color: var(--accent-color);
+      color: #0f172a;
+      font-weight: 700;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      width: 100%;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+      height: 0;
+      overflow: hidden;
+      border-radius: 8px;
+      background: #000;
+      margin-top: 1rem;
+    }
+
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .output-group {
+      margin-top: 1rem;
+    }
+
+    textarea {
+      width: 100%;
+      height: 90px;
+      background-color: var(--bg-color);
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.75rem;
+      font-family: monospace;
+      font-size: 0.85rem;
+      resize: none;
+      margin-bottom: 0.5rem;
+    }
+
+    .copy-btn {
+      background-color: var(--border-color);
+      color: var(--text-main);
+      font-size: 0.85rem;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .copy-btn:hover {
+      background-color: var(--accent-color);
+      color: #0f172a;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Global YouTube Re-Embed Generator</h1>
+      <p>Convert geo-restricted YouTube links into playable embedded streams.</p>
+    </header>
+
+    <div class="card">
+      <div class="input-group">
+        <label for="ytUrl">YouTube URL or Embed Link:</label>
+        <input 
+          type="text" 
+          id="ytUrl" 
+          placeholder="e.g., https://www.youtube.com/embed/mbzEkUWQNw0?si=Q3rVDVShZ_E671x5" 
+          value="https://www.youtube.com/embed/mbzEkUWQNw0?si=Q3rVDVShZ_E671x5"
+        >
+      </div>
+
+      <div class="input-group">
+        <label for="proxyEngine">Select Unblocked Relay Engine:</label>
+        <select id="proxyEngine">
+          <option value="yewtu.be">Invidious Server 1 (yewtu.be - EU/US Proxy)</option>
+          <option value="vid.puffyan.us">Invidious Server 2 (vid.puffyan.us)</option>
+          <option value="piped.video">Piped Stream Engine (piped.video)</option>
+          <option value="invidious.nerdvpn.de">Invidious Server 3 (nerdvpn.de)</option>
+        </select>
+      </div>
+
+      <button class="btn" onclick="generateStream()">Generate & Preview Stream</button>
+    </div>
+
+    <!-- Preview & Code Output -->
+    <div id="outputContainer" class="card hidden">
+      <h3>Live Preview</h3>
+      <div class="video-wrapper">
+        <iframe id="previewPlayer" allowfullscreen></iframe>
+      </div>
+
+      <div class="output-group">
+        <label for="embedCode">Generated Re-Embed Code (Paste on your website):</label>
+        <textarea id="embedCode" readonly></textarea>
+        <button class="copy-btn" onclick="copyEmbedCode()">Copy Embed Code</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function extractVideoID(url) {
+      // Regex pattern matching standard video links, shorts, and iframe embeds
+      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+      const match = url.match(regExp);
+      return (match && match[2].length === 11) ? match[2] : null;
+    }
+
+    function generateStream() {
+      const inputUrl = document.getElementById('ytUrl').value.trim();
+      const selectedEngine = document.getElementById('proxyEngine').value;
+      const videoId = extractVideoID(inputUrl);
+
+      if (!videoId) {
+        alert('Please enter a valid YouTube video URL or Video ID.');
+        return;
+      }
+
+      // Construct proxy embed URL
+      const proxyEmbedUrl = `https://${selectedEngine}/embed/${videoId}?autoplay=1`;
+
+      // Update Preview Player
+      const previewPlayer = document.getElementById('previewPlayer');
+      previewPlayer.src = proxyEmbedUrl;
+
+      // Generate Clean HTML Embed Code
+      const generatedCode = `<iframe \n  width="560" \n  height="315" \n  src="https://${selectedEngine}/embed/${videoId}" \n  title="Live Stream" \n  frameborder="0" \n  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" \n  allowfullscreen>\n</iframe>`;
+
+      document.getElementById('embedCode').value = generatedCode;
+      document.getElementById('outputContainer').classList.remove('hidden');
+    }
+
+    function copyEmbedCode() {
+      const copyText = document.getElementById('embedCode');
+      copyText.select();
+      copyText.setSelectionRange(0, 99999);
+      navigator.clipboard.writeText(copyText.value);
+      alert('Embed code copied to clipboard!');
+    }
+  </script>
+</body>
+</html>
