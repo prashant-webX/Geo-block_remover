@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yeti Live — Instant Stream Re-Embedder</title>
+  <title>Yeti Stream — Global Embedder</title>
   <style>
     :root {
-      --bg-main: #0b0f19;
-      --card-bg: #151c2e;
-      --accent-neon: #38bdf8;
-      --accent-glow: rgba(56, 189, 248, 0.3);
-      --text-main: #f8fafc;
+      --bg: #090d16;
+      --card: #131a2a;
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.25);
+      --text: #f8fafc;
       --text-sub: #94a3b8;
-      --border-line: #1e293b;
+      --border: #1e293b;
     }
 
     * {
@@ -23,8 +23,8 @@
     }
 
     body {
-      background-color: var(--bg-main);
-      color: var(--text-main);
+      background-color: var(--bg);
+      color: var(--text);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -32,9 +32,9 @@
       padding: 2rem 1rem;
     }
 
-    .yeti-container {
+    .container {
       width: 100%;
-      max-width: 850px;
+      max-width: 800px;
     }
 
     header {
@@ -43,100 +43,86 @@
     }
 
     header h1 {
-      font-size: 2.2rem;
+      font-size: 2rem;
       font-weight: 800;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
+      color: var(--text);
     }
 
     header h1 span {
-      color: var(--accent-neon);
-      text-shadow: 0 0 12px var(--accent-glow);
+      color: var(--accent);
+      text-shadow: 0 0 10px var(--accent-glow);
     }
 
     header p {
       color: var(--text-sub);
-      margin-top: 0.5rem;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
+      margin-top: 0.4rem;
     }
 
-    .panel {
-      background-color: var(--card-bg);
-      border: 1px solid var(--border-line);
-      border-radius: 14px;
-      padding: 1.75rem;
+    .box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
       margin-bottom: 1.5rem;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
     }
 
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      margin-bottom: 1.25rem;
+    .field {
+      margin-bottom: 1rem;
     }
 
     label {
-      font-size: 0.85rem;
-      font-weight: 600;
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--accent-neon);
+      color: var(--accent);
+      margin-bottom: 0.4rem;
     }
 
-    input[type="text"], select {
+    input[type="text"] {
       width: 100%;
-      padding: 0.85rem 1rem;
-      background-color: var(--bg-main);
-      border: 1px solid var(--border-line);
+      padding: 0.8rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
       border-radius: 8px;
-      color: var(--text-main);
+      color: var(--text);
       font-size: 0.95rem;
       outline: none;
-      transition: border 0.2s;
     }
 
-    input[type="text"]:focus, select:focus {
-      border-color: var(--accent-neon);
+    input[type="text"]:focus {
+      border-color: var(--accent);
       box-shadow: 0 0 8px var(--accent-glow);
     }
 
-    .yeti-btn {
+    .btn {
       width: 100%;
-      padding: 0.9rem;
-      background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
-      color: #0b0f19;
+      padding: 0.85rem;
+      background: var(--accent);
+      color: #090d16;
       font-weight: 700;
       font-size: 1rem;
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: transform 0.1s, opacity 0.2s;
     }
 
-    .yeti-btn:hover {
-      opacity: 0.95;
+    .btn:hover {
+      opacity: 0.9;
     }
 
-    .yeti-btn:active {
-      transform: scale(0.99);
-    }
-
-    .player-frame {
+    .player-container {
       position: relative;
       padding-bottom: 56.25%;
       height: 0;
+      background: #000;
+      border-radius: 8px;
       overflow: hidden;
-      border-radius: 10px;
-      background-color: #000;
       margin-top: 1rem;
-      border: 1px solid var(--border-line);
     }
 
-    .player-frame iframe {
+    .player-container iframe {
       position: absolute;
       top: 0;
       left: 0;
@@ -147,35 +133,32 @@
 
     textarea {
       width: 100%;
-      height: 110px;
-      background-color: var(--bg-main);
-      color: var(--accent-neon);
-      border: 1px solid var(--border-line);
+      height: 100px;
+      background: var(--bg);
+      color: var(--accent);
+      border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 0.85rem;
+      padding: 0.75rem;
       font-family: monospace;
       font-size: 0.85rem;
       resize: none;
       margin-top: 0.5rem;
-      margin-bottom: 0.75rem;
     }
 
-    .copy-action {
-      display: inline-block;
-      padding: 0.6rem 1.2rem;
-      background-color: var(--border-line);
-      color: var(--text-main);
-      font-size: 0.85rem;
-      font-weight: 600;
+    .copy-btn {
+      margin-top: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--border);
+      color: var(--text);
       border: none;
       border-radius: 6px;
+      font-size: 0.85rem;
       cursor: pointer;
-      transition: background 0.2s;
     }
 
-    .copy-action:hover {
-      background-color: var(--accent-neon);
-      color: var(--bg-main);
+    .copy-btn:hover {
+      background: var(--accent);
+      color: #090d16;
     }
 
     .hidden {
@@ -185,91 +168,72 @@
 </head>
 <body>
 
-  <div class="yeti-container">
+  <div class="container">
     <header>
-      <h1>🏔️ <span>Yeti Live</span> Relay</h1>
-      <p>Single-file global YouTube embed generator</p>
+      <h1>🏔️ <span>Yeti Stream</span> Relay</h1>
+      <p>Bypass regional blocks & generate playable YouTube embed code</p>
     </header>
 
-    <div class="panel">
-      <div class="form-group">
-        <label for="streamUrl">YouTube Video / Embed URL:</label>
+    <div class="box">
+      <div class="field">
+        <label for="videoUrl">Paste Restricted YouTube URL or Embed Link:</label>
         <input 
           type="text" 
-          id="streamUrl" 
-          placeholder="https://www.youtube.com/embed/mbzEkUWQNw0?si=Q3rVDVShZ_E671x5"
+          id="videoUrl" 
+          placeholder="https://www.youtube.com/embed/mbzEkUWQNw0?si=Q3rVDVShZ_E671x5" 
           value="https://www.youtube.com/embed/mbzEkUWQNw0?si=Q3rVDVShZ_E671x5"
         >
       </div>
-
-      <div class="form-group">
-        <label for="proxyNode">Select Relay Proxy Server:</label>
-        <select id="proxyNode">
-          <option value="https://api.codetabs.com/v1/proxy?quest=">Global Relay Node 1 (Fast)</option>
-          <option value="https://corsproxy.io/?">Global Relay Node 2 (CORSProxy)</option>
-          <option value="https://piped.video/embed/">Direct Stream Engine (Piped Node)</option>
-        </select>
-      </div>
-
-      <button class="yeti-btn" onclick="generateYetiStream()">Generate Embed Code & Preview</button>
+      <button class="btn" onclick="processStream()">Generate & Load Unblocked Video</button>
     </div>
 
-    <div id="resultPanel" class="panel hidden">
-      <label>Stream Preview</label>
-      <div class="player-frame">
-        <iframe id="yetiPlayer" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+    <div id="outputBox" class="box hidden">
+      <label>Video Stream Preview</label>
+      <div class="player-container">
+        <iframe id="streamFrame" allowfullscreen allow="autoplay; encrypted-media"></iframe>
       </div>
 
       <div style="margin-top: 1.5rem;">
-        <label for="generatedCode">Embed Code for Your Website:</label>
-        <textarea id="generatedCode" readonly></textarea>
-        <button class="copy-action" onclick="copyCode()">Copy Embed Code</button>
+        <label for="embedOutput">Copy Global Embed Code For Your Website:</label>
+        <textarea id="embedOutput" readonly></textarea>
+        <button class="copy-btn" onclick="copyCode()">Copy Code</button>
       </div>
     </div>
   </div>
 
   <script>
-    function parseYoutubeId(url) {
-      const regex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-      const match = url.match(regex);
+    function parseID(url) {
+      const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
       return (match && match[2].length === 11) ? match[2] : null;
     }
 
-    function generateYetiStream() {
-      const inputUrl = document.getElementById('streamUrl').value.trim();
-      const proxyNode = document.getElementById('proxyNode').value;
-      const videoId = parseYoutubeId(inputUrl);
+    function processStream() {
+      const url = document.getElementById('videoUrl').value.trim();
+      const videoId = parseID(url);
 
       if (!videoId) {
-        alert("Invalid YouTube URL. Please enter a valid video link or embed URL.");
+        alert("Please enter a valid YouTube Video URL.");
         return;
       }
 
-      let finalEmbedSrc = "";
+      // Route stream via dedicated global unblocked stream gateway
+      const proxyEmbedUrl = `https://iv.melmac.space/embed/${videoId}?autoplay=1`;
 
-      // Handle direct engine versus proxy endpoints
-      if (proxyNode.includes("piped.video")) {
-        finalEmbedSrc = `${proxyNode}${videoId}`;
-      } else {
-        const rawTarget = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-        finalEmbedSrc = `${proxyNode}${encodeURIComponent(rawTarget)}`;
-      }
+      // Load preview frame
+      document.getElementById('streamFrame').src = proxyEmbedUrl;
 
-      // Update Preview Frame
-      document.getElementById('yetiPlayer').src = finalEmbedSrc;
+      // Generate Clean Embed Code
+      const embedCode = `<iframe \n  width="100%" \n  height="450" \n  src="${proxyEmbedUrl}" \n  title="Yeti Live Stream" \n  frameborder="0" \n  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" \n  allowfullscreen>\n</iframe>`;
 
-      // Generate HTML Embed Output
-      const codeOutput = `<iframe \n  width="100%" \n  height="450" \n  src="${finalEmbedSrc}" \n  title="Yeti Live Stream" \n  frameborder="0" \n  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" \n  allowfullscreen>\n</iframe>`;
-
-      document.getElementById('generatedCode').value = codeOutput;
-      document.getElementById('resultPanel').classList.remove('hidden');
+      document.getElementById('embedOutput').value = embedCode;
+      document.getElementById('outputBox').classList.remove('hidden');
     }
 
     function copyCode() {
-      const codeField = document.getElementById('generatedCode');
-      codeField.select();
-      navigator.clipboard.writeText(codeField.value);
-      alert('Yeti Live embed code copied to clipboard!');
+      const codeArea = document.getElementById('embedOutput');
+      codeArea.select();
+      navigator.clipboard.writeText(codeArea.value);
+      alert('Embed code copied!');
     }
   </script>
 </body>
